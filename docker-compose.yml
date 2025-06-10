@@ -3,12 +3,12 @@ version: "3.9"
 services:
   postgres:
     image: postgres:15
-    container_name: lpoo-avaliacao-final
+    container_name: ProjetoFinal_FELIPE
     restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: db_lpoo_avaliacao_final
+      POSTGRES_DB: ProjetoFinal_FELIPE
       POSTGRES_USER: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
