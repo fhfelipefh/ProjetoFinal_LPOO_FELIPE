@@ -10,6 +10,7 @@ public final class JpaUtil {
     private static final String PU_NAME = "reservasPU";
     private static final EntityManagerFactory emf =
             Persistence.createEntityManagerFactory(PU_NAME);
+
     private JpaUtil() {
     }
 
