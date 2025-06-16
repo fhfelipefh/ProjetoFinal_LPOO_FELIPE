@@ -1,61 +1,112 @@
 package com.fhfelipefh.projetofinal_lpoo_felipe.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "reservas",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"sala_id", "inicio", "fim"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"sala_id", "inicio", "fim"}))
 public class Reserva {
 
-    public enum Status { PENDENTE, APROVADA, CANCELADA }
+    public Reserva() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    @Column(name = "inicio", nullable = false)
+    private LocalDateTime dataHoraInicio;
+
+    @Column(name = "fim", nullable = false)
+    private LocalDateTime dataHoraFim;
+
+    @Enumerated(EnumType.STRING)
+    private ReservaStatus status = ReservaStatus.PENDENTE;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "sala_id")
     private Sala sala;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @Column(nullable = false)
-    private LocalDateTime inicio;
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime fim;
+    private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status = Status.PENDENTE;
+    @PrePersist
+    private void prePersist() {
+        createdAt = updatedAt = LocalDateTime.now();
+    }
 
-    public Reserva() {}
+    @PreUpdate
+    private void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
-    public Reserva(Sala sala, Usuario usuario, LocalDateTime inicio, LocalDateTime fim) {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDataHoraInicio() {
+        return dataHoraInicio;
+    }
+
+    public void setDataHoraInicio(LocalDateTime dataHoraInicio) {
+        this.dataHoraInicio = dataHoraInicio;
+    }
+
+    public LocalDateTime getDataHoraFim() {
+        return dataHoraFim;
+    }
+
+    public void setDataHoraFim(LocalDateTime dataHoraFim) {
+        this.dataHoraFim = dataHoraFim;
+    }
+
+    public ReservaStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReservaStatus status) {
+        this.status = status;
+    }
+
+    public Sala getSala() {
+        return sala;
+    }
+
+    public void setSala(Sala sala) {
         this.sala = sala;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-        this.inicio = inicio;
-        this.fim = fim;
     }
 
-    // Getters and setters omitted for brevity
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Reserva reserva)) return false;
-        return Objects.equals(id, reserva.id);
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    @Override
-    public String toString() {
-        return sala + " de " + inicio + " até " + fim + " (" + status + ")";
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

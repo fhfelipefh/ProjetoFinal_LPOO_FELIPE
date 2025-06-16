@@ -1,54 +1,110 @@
 package com.fhfelipefh.projetofinal_lpoo_felipe.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "salas")
 public class Sala {
 
+    public Sala() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 400)
     private String nome;
 
-    @Column(nullable = false)
-    private int capacidade;
+    private Integer capacidade;
 
-    @Column(nullable = false)
+    @Column(length = 1550)
     private String localizacao;
 
-    @Column(precision = 8, scale = 2, nullable = false)
-    private BigDecimal preco;
+    @Column(precision = 12, scale = 2, nullable = false)
+    private BigDecimal precoHora;
 
-    public Sala() {}
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public Sala(String nome, int capacidade, String localizacao, BigDecimal preco) {
+    @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserva> reservas = new ArrayList<>();
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Integer getCapacidade() {
+        return capacidade;
+    }
+
+    public void setCapacidade(Integer capacidade) {
         this.capacidade = capacidade;
+    }
+
+    public String getLocalizacao() {
+        return localizacao;
+    }
+
+    public void setLocalizacao(String localizacao) {
         this.localizacao = localizacao;
-        this.preco = preco;
     }
 
-    // Getters and setters omitted for brevity
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public BigDecimal getPrecoHora() {
+        return precoHora;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Sala sala)) return false;
-        return Objects.equals(id, sala.id);
+    public void setPrecoHora(BigDecimal precoHora) {
+        this.precoHora = precoHora;
     }
 
-    @Override
-    public String toString() {
-        return nome + " (" + capacidade + " pessoas)";
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
     }
 }
