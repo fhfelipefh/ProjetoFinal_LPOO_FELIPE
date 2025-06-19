@@ -1,4 +1,3 @@
-// src/main/java/com/fhfelipefh/projetofinal_lpoo_felipe/view/SalasForm.java
 package com.fhfelipefh.projetofinal_lpoo_felipe.view;
 
 import com.fhfelipefh.projetofinal_lpoo_felipe.control.SalaController;
