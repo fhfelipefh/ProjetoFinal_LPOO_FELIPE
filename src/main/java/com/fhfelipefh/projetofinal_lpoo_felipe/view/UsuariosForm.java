@@ -4,14 +4,19 @@ import com.fhfelipefh.projetofinal_lpoo_felipe.control.UsuarioController;
 import com.fhfelipefh.projetofinal_lpoo_felipe.model.Usuario;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 
 import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
 
 public class UsuariosForm extends JPanel {
     private JSplitPane splitPanelVertical;
+    private JTextField tfSearch;
     private JScrollPane usuariosScrollPane;
     private DefaultListModel<Usuario> usuariosModel;
     private JList<Usuario> usuariosList;
@@ -34,6 +39,52 @@ public class UsuariosForm extends JPanel {
         splitPanelVertical.setResizeWeight(0.4);
         add(splitPanelVertical, BorderLayout.CENTER);
 
+        tfSearch = new JTextField();
+        tfSearch.setPreferredSize(new Dimension(200, 25));
+        tfSearch.setForeground(Color.GRAY);
+        tfSearch.setText("Pesquisar por nome...");
+        tfSearch.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (tfSearch.getText().equals("Pesquisar por nome...")) {
+                    tfSearch.setText("");
+                    tfSearch.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (tfSearch.getText().isEmpty()) {
+                    tfSearch.setForeground(Color.GRAY);
+                    tfSearch.setText("Pesquisar por nome...");
+                    filterUsers("");
+                }
+            }
+        });
+
+        tfSearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                onChange();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                onChange();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                onChange();
+            }
+
+            private void onChange() {
+                String text = tfSearch.getText();
+                if (text.equals("Pesquisar por nome...")) text = "";
+                filterUsers(text.trim());
+            }
+        });
+
         usuariosModel = new DefaultListModel<>();
         usuariosList = new JList<>(usuariosModel);
         usuariosList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -44,8 +95,12 @@ public class UsuariosForm extends JPanel {
             lbl.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
             return lbl;
         });
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(tfSearch, BorderLayout.NORTH);
         usuariosScrollPane = new JScrollPane(usuariosList);
-        splitPanelVertical.setLeftComponent(usuariosScrollPane);
+        leftPanel.add(usuariosScrollPane, BorderLayout.CENTER);
+        splitPanelVertical.setLeftComponent(leftPanel);
 
         rightPanel = new JPanel(new BorderLayout(10, 10));
         rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -73,19 +128,14 @@ public class UsuariosForm extends JPanel {
         btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
         btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
         btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
-
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
         buttonsPanel.add(btnCancel);
 
         usuariosList.addListSelectionListener((ListSelectionListener) e -> {
-            if (!e.getValueIsAdjusting()) {
-                Usuario sel = usuariosList.getSelectedValue();
-                showUser(sel);
-            }
+            if (!e.getValueIsAdjusting()) showUser(usuariosList.getSelectedValue());
         });
-
         btnSave.addActionListener(e -> saveUser());
         btnEdit.addActionListener(e -> enableEditing());
         btnDelete.addActionListener(e -> deleteUser());
@@ -96,7 +146,6 @@ public class UsuariosForm extends JPanel {
 
         carregarUsuarios();
         showUser(null);
-
         SwingUtilities.invokeLater(() -> splitPanelVertical.setDividerLocation(0.4));
     }
 
@@ -113,20 +162,21 @@ public class UsuariosForm extends JPanel {
     }
 
     private void carregarUsuarios() {
-        usuariosModel.clear();
         List<Usuario> list = controller.findAll();
+        usuariosModel.clear();
         list.forEach(usuariosModel::addElement);
+        String filtro = tfSearch.getText();
+        if (!filtro.equals("Pesquisar por nome...")) filterUsers(filtro.trim());
     }
 
     private void showUser(Usuario user) {
         currentUser = user;
+        detailsPanel.removeAll();
         if (user == null) {
-            detailsPanel.removeAll();
             detailsPanel.add(new JLabel("Novo Usuário"));
             clearFields();
             enableForm(true);
         } else {
-            detailsPanel.removeAll();
             detailsPanel.add(new JLabel("Detalhes do Usuário"));
             tfNome.setText(user.getNome());
             tfNome.setEditable(false);
@@ -135,6 +185,7 @@ public class UsuariosForm extends JPanel {
             btnSave.setEnabled(false);
             btnEdit.setEnabled(true);
             btnDelete.setEnabled(true);
+            btnCancel.setEnabled(true);
         }
         detailsPanel.revalidate();
         detailsPanel.repaint();
@@ -163,6 +214,8 @@ public class UsuariosForm extends JPanel {
         tfEmail.setEditable(true);
         btnSave.setEnabled(true);
         btnEdit.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnCancel.setEnabled(true);
     }
 
     private void deleteUser() {
@@ -194,5 +247,21 @@ public class UsuariosForm extends JPanel {
         btnEdit.setEnabled(false);
         btnDelete.setEnabled(false);
         btnCancel.setEnabled(true);
+    }
+
+    private void filterUsers(String query) {
+        List<Usuario> all = controller.findAll();
+        usuariosModel.clear();
+        if (query.isEmpty()) {
+            all.forEach(usuariosModel::addElement);
+        } else {
+            String q = query.toLowerCase();
+            for (Usuario u : all) {
+                if (u.getNome().toLowerCase().contains(q)) {
+                    usuariosModel.addElement(u);
+                }
+            }
+        }
+        usuariosList.clearSelection();
     }
 }
