@@ -101,4 +101,44 @@ public class ReservaController {
         em.close();
         return list;
     }
+
+    public Reserva update(Integer reservaId,
+                          LocalDateTime novoInicio,
+                          LocalDateTime novoFim,
+                          Sala sala,
+                          Usuario usuario) {
+        EntityManager em = JpaUtil.getEntityManager();
+
+        TypedQuery<Long> q = em.createQuery("""
+            SELECT COUNT(r)
+              FROM Reserva r
+             WHERE r.sala = :sala
+               AND r.id <> :id
+               AND r.dataHoraInicio < :fim
+               AND r.dataHoraFim   > :inicio
+        """, Long.class);
+        q.setParameter("sala", sala);
+        q.setParameter("id",    reservaId);
+        q.setParameter("fim",   novoFim);
+        q.setParameter("inicio",novoInicio);
+        if (q.getSingleResult() > 0) {
+            em.close();
+            throw new IllegalStateException("Conflito de horário nesta sala");
+        }
+
+        em.getTransaction().begin();
+        Reserva r = em.find(Reserva.class, reservaId);
+        if (r == null) {
+            em.getTransaction().rollback();
+            em.close();
+            throw new IllegalArgumentException("Reserva não encontrada: " + reservaId);
+        }
+        r.setDataHoraInicio(novoInicio);
+        r.setDataHoraFim(novoFim);
+        r.setSala(sala);
+        r.setUsuario(usuario);
+        em.getTransaction().commit();
+        em.close();
+        return r;
+    }
 }

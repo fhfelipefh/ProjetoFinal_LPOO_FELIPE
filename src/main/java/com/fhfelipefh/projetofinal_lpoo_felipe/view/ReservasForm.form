@@ -19,28 +19,7 @@
           <dividerSize value="5"/>
         </properties>
         <border type="none"/>
-        <children>
-          <splitpane id="cb32f" binding="splitPaneRightVertical">
-            <constraints>
-              <splitpane position="right"/>
-            </constraints>
-            <properties>
-              <dividerLocation value="305"/>
-              <dividerSize value="5"/>
-              <orientation value="0"/>
-            </properties>
-            <border type="none"/>
-            <children/>
-          </splitpane>
-          <scrollpane id="25c3b" binding="reservasScrollPane">
-            <constraints>
-              <splitpane position="left"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children/>
-          </scrollpane>
-        </children>
+        <children/>
       </splitpane>
     </children>
   </grid>

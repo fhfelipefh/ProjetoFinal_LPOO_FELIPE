@@ -78,15 +78,19 @@ public class SalasForm extends JPanel {
 
         btnSave = new JButton("Salvar");
         btnSave.setBackground(Color.GREEN);
+        btnSave.setForeground(Color.WHITE);
 
         btnEdit = new JButton("Editar");
         btnEdit.setBackground(Color.BLUE);
+        btnEdit.setForeground(Color.WHITE);
 
         btnDelete = new JButton("Excluir");
         btnDelete.setBackground(Color.RED);
+        btnDelete.setForeground(Color.WHITE);
 
         btnCancel = new JButton("Cancelar");
         btnCancel.setBackground(Color.LIGHT_GRAY);
+        btnCancel.setForeground(Color.BLACK);
 
         buttonsPanel.add(btnCancel);
         buttonsPanel.add(btnSave);
