@@ -22,7 +22,7 @@ public class ProjetoFinal_LPOO_FELIPE {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(form.getRootComponent());
             frame.pack();
-            frame.setSize(1024, 768);
+            frame.setSize(1920, 900);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         });

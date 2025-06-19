@@ -14,6 +14,8 @@ import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredB
 import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createCurrencyField;
 
 public class SalasForm extends JPanel {
+    private static final Integer CAPACITY_MAX = 100000;
+
     private JSplitPane splitPanelVertical;
     private JTextField tfFilterNome;
     private JTextField tfFilterLocalizacao;
@@ -52,7 +54,7 @@ public class SalasForm extends JPanel {
         tfFilterLocalizacao = new JTextField();
         tfFilterLocalizacao.setPreferredSize(new Dimension(100, 25));
         spMinCapacidade = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
-        spMaxCapacidade = new JSpinner(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+        spMaxCapacidade = new JSpinner(new SpinnerNumberModel(CAPACITY_MAX, 0, CAPACITY_MAX, 1));
         tfFilterPrecoMin = createCurrencyField();
         tfFilterPrecoMin.setValue(null);
         tfFilterPrecoMax = createCurrencyField();
@@ -271,6 +273,12 @@ public class SalasForm extends JPanel {
 
         try {
             int cap = Integer.parseInt(capStr);
+
+            if (cap > CAPACITY_MAX) {
+                JOptionPane.showMessageDialog(this, "Capacidade não pode exceder " + CAPACITY_MAX, "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (currentSala == null) {
                 controller.create(nome, cap, loc, preco);
             } else {
