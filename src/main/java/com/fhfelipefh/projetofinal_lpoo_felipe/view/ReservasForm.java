@@ -32,7 +32,7 @@ public class ReservasForm extends JPanel {
     private final JList<Sala> listSala = new JList<>(salaPickModel);
     private final JList<Usuario> listUsuario = new JList<>(usuarioPickModel);
     private final JComboBox<ReservaStatus> cbStatus = new JComboBox<>(ReservaStatus.values());
-    private JLabel lblConflict;
+    private JLabel lblConflict, lblSalaAtual, lblUsuarioAtual;
     private JButton btnSave, btnEdit, btnDelete, btnCancel;
     private final ReservaController rCtrl = new ReservaController();
     private final SalaController sCtrl = new SalaController();
@@ -173,6 +173,11 @@ public class ReservasForm extends JPanel {
         uCtrl.findAll().forEach(usuarioPickModel::addElement);
     }
 
+    private void updateCurrentLabels(Sala s, Usuario u) {
+        lblSalaAtual.setText("Sala atual: " + (s != null ? s.getNome() : "-"));
+        lblUsuarioAtual.setText("Usuário atual: " + (u != null ? u.getNome() + " (" + u.getEmail() + ")" : "-"));
+    }
+
     private void showCreate() {
         current = null;
         details.removeAll();
@@ -207,13 +212,23 @@ public class ReservasForm extends JPanel {
         listSala.setEnabled(true);
         form.add(spSala, c);
 
+        lblSalaAtual = new JLabel("Sala atual: -");
         c = gc(0, 3);
+        c.gridwidth = 2;
+        form.add(lblSalaAtual, c);
+
+        c = gc(0, 4);
         form.add(new JLabel("Usuário:"), c);
         c.gridx = 1;
         listUsuario.setEnabled(true);
         form.add(spUsu, c);
 
-        c = gc(0, 4);
+        lblUsuarioAtual = new JLabel("Usuário atual: -");
+        c = gc(0, 5);
+        c.gridwidth = 2;
+        form.add(lblUsuarioAtual, c);
+
+        c = gc(0, 6);
         form.add(new JLabel("Status:"), c);
         c.gridx = 1;
         cbStatus.setEnabled(true);
@@ -222,7 +237,7 @@ public class ReservasForm extends JPanel {
 
         lblConflict = new JLabel(" ");
         lblConflict.setForeground(Color.RED);
-        c = gc(0, 5);
+        c = gc(0, 7);
         c.gridwidth = 2;
         c.anchor = GridBagConstraints.CENTER;
         form.add(lblConflict, c);
@@ -271,21 +286,33 @@ public class ReservasForm extends JPanel {
         c.gridx = 1;
         form.add(spSala, c);
 
+        lblSalaAtual = new JLabel();
         c = gc(0, 3);
+        c.gridwidth = 2;
+        form.add(lblSalaAtual, c);
+
+        c = gc(0, 4);
         form.add(new JLabel("Usuário:"), c);
         c.gridx = 1;
         form.add(spUsu, c);
 
-        c = gc(0, 4);
+        lblUsuarioAtual = new JLabel();
+        c = gc(0, 5);
+        c.gridwidth = 2;
+        form.add(lblUsuarioAtual, c);
+
+        c = gc(0, 6);
         form.add(new JLabel("Status:"), c);
         c.gridx = 1;
         cbStatus.setSelectedItem(current.getStatus());
         cbStatus.setEnabled(false);
         form.add(cbStatus, c);
 
+        updateCurrentLabels(current.getSala(), current.getUsuario());
+
         lblConflict = new JLabel(" ");
         lblConflict.setForeground(Color.RED);
-        c = gc(0, 5);
+        c = gc(0, 7);
         c.gridwidth = 2;
         c.anchor = GridBagConstraints.CENTER;
         form.add(lblConflict, c);
