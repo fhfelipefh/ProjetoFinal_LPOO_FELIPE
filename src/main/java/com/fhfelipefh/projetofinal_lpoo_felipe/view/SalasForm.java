@@ -1,3 +1,4 @@
+// src/main/java/com/fhfelipefh/projetofinal_lpoo_felipe/view/SalasForm.java
 package com.fhfelipefh.projetofinal_lpoo_felipe.view;
 
 import com.fhfelipefh.projetofinal_lpoo_felipe.control.SalaController;
@@ -25,6 +26,7 @@ public class SalasForm extends JPanel {
     private JButton btnSave;
     private JButton btnEdit;
     private JButton btnDelete;
+    private JButton btnCancel;
     private final SalaController controller = new SalaController();
     private Sala currentSala;
 
@@ -39,15 +41,13 @@ public class SalasForm extends JPanel {
         salasList = new JList<>(salasModel);
         salasList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         salasList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            String text = String.format("%s (Capacidade: %d)",
-                    value.getNome(), value.getCapacidade());
+            String text = String.format("%s (Capacidade: %d)", value.getNome(), value.getCapacidade());
             JLabel lbl = new JLabel(text);
             lbl.setOpaque(true);
             lbl.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
             lbl.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
             return lbl;
         });
-
         salasScrollPane = new JScrollPane(salasList);
         splitPanelVertical.setLeftComponent(salasScrollPane);
 
@@ -55,15 +55,16 @@ public class SalasForm extends JPanel {
         rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         splitPanelVertical.setRightComponent(rightPanel);
 
-        detailsPanel = new JPanel();
+        detailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         detailsPanel.setBackground(Color.LIGHT_GRAY);
+        detailsPanel.setPreferredSize(new Dimension(0, 30));
         rightPanel.add(detailsPanel, BorderLayout.NORTH);
 
         formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         rightPanel.add(formPanel, BorderLayout.CENTER);
 
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         tfNome = createTextField();
@@ -76,8 +77,18 @@ public class SalasForm extends JPanel {
         placeField(formPanel, "Preço Hora:", tfPrecoHora, 3);
 
         btnSave = new JButton("Salvar");
+        btnSave.setBackground(Color.GREEN);
+
         btnEdit = new JButton("Editar");
+        btnEdit.setBackground(Color.BLUE);
+
         btnDelete = new JButton("Excluir");
+        btnDelete.setBackground(Color.RED);
+
+        btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(Color.LIGHT_GRAY);
+
+        buttonsPanel.add(btnCancel);
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
@@ -89,10 +100,13 @@ public class SalasForm extends JPanel {
         btnSave.addActionListener(e -> saveSala());
         btnEdit.addActionListener(e -> enableEditing());
         btnDelete.addActionListener(e -> deleteSala());
+        btnCancel.addActionListener(e -> {
+            salasList.clearSelection();
+            showSala(null);
+        });
 
         carregarSalas();
         showSala(null);
-
         SwingUtilities.invokeLater(() -> splitPanelVertical.setDividerLocation(0.4));
     }
 
@@ -123,13 +137,15 @@ public class SalasForm extends JPanel {
     private void showSala(Sala sala) {
         currentSala = sala;
         detailsPanel.removeAll();
+        formPanel.setVisible(true);
+        btnSave.setEnabled(true);
+        btnEdit.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnCancel.setEnabled(false);
         if (sala == null) {
             detailsPanel.add(new JLabel("Nova Sala"));
-            setFieldsEditable(true);
             clearFields();
-            btnSave.setEnabled(true);
-            btnEdit.setEnabled(false);
-            btnDelete.setEnabled(false);
+            enableForm(true);
         } else {
             detailsPanel.add(new JLabel("Detalhes da Sala"));
             tfNome.setText(sala.getNome());
@@ -143,6 +159,7 @@ public class SalasForm extends JPanel {
             btnSave.setEnabled(false);
             btnEdit.setEnabled(true);
             btnDelete.setEnabled(true);
+            btnCancel.setEnabled(true);
         }
         detailsPanel.revalidate();
         detailsPanel.repaint();
@@ -160,9 +177,8 @@ public class SalasForm extends JPanel {
         try {
             Integer cap = Integer.valueOf(capStr);
             BigDecimal preco = new BigDecimal(preStr);
-            if (currentSala == null) {
-                controller.create(nome, cap, loc, preco);
-            } else {
+            if (currentSala == null) controller.create(nome, cap, loc, preco);
+            else {
                 currentSala.setNome(nome);
                 currentSala.setCapacidade(cap);
                 currentSala.setLocalizacao(loc);
@@ -177,7 +193,7 @@ public class SalasForm extends JPanel {
     }
 
     private void enableEditing() {
-        setFieldsEditable(true);
+        enableForm(true);
         btnSave.setEnabled(true);
         btnEdit.setEnabled(false);
     }
@@ -193,11 +209,12 @@ public class SalasForm extends JPanel {
         }
     }
 
-    private void setFieldsEditable(boolean editable) {
+    private void enableForm(boolean editable) {
         tfNome.setEditable(editable);
         tfCapacidade.setEditable(editable);
         tfLocalizacao.setEditable(editable);
         tfPrecoHora.setEditable(editable);
+        btnCancel.setEnabled(editable);
     }
 
     private void clearFields() {

@@ -22,6 +22,7 @@ public class UsuariosForm extends JPanel {
     private JButton btnSave;
     private JButton btnEdit;
     private JButton btnDelete;
+    private JButton btnCancel;
     private final UsuarioController controller = new UsuarioController();
     private Usuario currentUser;
 
@@ -67,8 +68,17 @@ public class UsuariosForm extends JPanel {
         placeField(formPanel, "Email:", tfEmail, 1);
 
         btnSave = new JButton("Salvar");
+        btnSave.setBackground(Color.GREEN);
+
         btnEdit = new JButton("Editar");
+        btnEdit.setBackground(Color.BLUE);
+
         btnDelete = new JButton("Excluir");
+        btnDelete.setBackground(Color.RED);
+
+        btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(Color.LIGHT_GRAY);
+
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
