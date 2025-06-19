@@ -28,6 +28,8 @@ public class MainForm {
                                 que gerencia cadastros de salas, usuários
                                 e reservas, controlando conflitos de horário
                                 e status das solicitações.
+                                
+                                Desenvolvido por Felipe Honorio Moraes
                                 """,
                         "Sobre", JOptionPane.INFORMATION_MESSAGE));
         help.add(sobre);
