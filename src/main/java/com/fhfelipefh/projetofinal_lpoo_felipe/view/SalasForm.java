@@ -54,7 +54,7 @@ public class SalasForm extends JPanel {
         tfFilterLocalizacao = new JTextField();
         tfFilterLocalizacao.setPreferredSize(new Dimension(100, 25));
         spMinCapacidade = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
-        spMaxCapacidade = new JSpinner(new SpinnerNumberModel(CAPACITY_MAX, 0, CAPACITY_MAX, 1));
+        spMaxCapacidade = new JSpinner(new SpinnerNumberModel(CAPACITY_MAX.intValue(), 0, CAPACITY_MAX.intValue(), 1));
         tfFilterPrecoMin = createCurrencyField();
         tfFilterPrecoMin.setValue(null);
         tfFilterPrecoMax = createCurrencyField();
