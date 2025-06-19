@@ -10,8 +10,6 @@ import com.fhfelipefh.projetofinal_lpoo_felipe.model.Usuario;
 import com.github.lgooddatepicker.components.CalendarPanel;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.time.LocalDate;
@@ -24,44 +22,39 @@ import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredB
 
 public class ReservasForm extends JPanel {
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private JSplitPane split;
-    private DefaultListModel<Reserva> reservasModel;
-    private JList<Reserva> reservasList;
-    private CalendarPanel calendar;
-    private JPanel details;
-    private JPanel form;
-    private JTextField tfInicio;
-    private JTextField tfFim;
-    private JTextField tfSalaFiltro;
-    private JTextField tfUsuarioFiltro;
-    private DefaultListModel<Sala> salaPickModel;
-    private DefaultListModel<Usuario> usuarioPickModel;
-    private JList<Sala> listSala;
-    private JList<Usuario> listUsuario;
-    private JComboBox<ReservaStatus> cbStatus;
+    private final DefaultListModel<Reserva> reservasModel = new DefaultListModel<>();
+    private final JList<Reserva> reservasList = new JList<>(reservasModel);
+    private final CalendarPanel calendar = new CalendarPanel();
+    private JPanel details, form;
+    private final JTextField tfInicio = new JTextField();
+    private final JTextField tfFim = new JTextField();
+    private final DefaultListModel<Sala> salaPickModel = new DefaultListModel<>();
+    private final DefaultListModel<Usuario> usuarioPickModel = new DefaultListModel<>();
+    private final JList<Sala> listSala = new JList<>(salaPickModel);
+    private final JList<Usuario> listUsuario = new JList<>(usuarioPickModel);
+    private final JComboBox<ReservaStatus> cbStatus = new JComboBox<>(ReservaStatus.values());
     private JButton btnSave, btnEdit, btnDelete, btnCancel;
-    private ReservaController rCtrl = new ReservaController();
-    private SalaController sCtrl = new SalaController();
-    private UsuarioController uCtrl = new UsuarioController();
+    private final ReservaController rCtrl = new ReservaController();
+    private final SalaController sCtrl = new SalaController();
+    private final UsuarioController uCtrl = new UsuarioController();
     private Reserva current;
     private LocalDate selDate;
 
     public ReservasForm() {
         super(new BorderLayout());
-        split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        split.setResizeWeight(0.4);
+
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        split.setResizeWeight(0.35);
         add(split, BorderLayout.CENTER);
 
-        reservasModel = new DefaultListModel<>();
-        reservasList = new JList<>(reservasModel);
         reservasList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         reservasList.setCellRenderer((l, v, i, s, f) -> {
-            String t = "%s – %s | %s | %s".formatted(
+            String txt = "%s – %s | %s | %s".formatted(
                     v.getDataHoraInicio().toLocalTime(),
                     v.getDataHoraFim().toLocalTime(),
                     v.getSala().getNome(),
                     v.getStatus());
-            JLabel lbl = new JLabel(t);
+            JLabel lbl = new JLabel(txt);
             lbl.setOpaque(true);
             lbl.setBackground(s ? l.getSelectionBackground() : l.getBackground());
             lbl.setForeground(colorForStatus(v.getStatus()));
@@ -73,7 +66,6 @@ public class ReservasForm extends JPanel {
         right.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         split.setRightComponent(right);
 
-        calendar = new CalendarPanel();
         right.add(calendar, BorderLayout.NORTH);
 
         JPanel center = new JPanel(new BorderLayout(5, 5));
@@ -81,40 +73,35 @@ public class ReservasForm extends JPanel {
 
         details = new JPanel(new FlowLayout(FlowLayout.LEFT));
         details.setBackground(Color.LIGHT_GRAY);
-        details.setPreferredSize(new Dimension(0, 30));
+        details.setPreferredSize(new Dimension(0, 28));
         center.add(details, BorderLayout.NORTH);
 
         form = new JPanel(new GridBagLayout());
-        form.setBackground(Color.WHITE);
         center.add(form, BorderLayout.CENTER);
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         btnSave = createColoredButton("Salvar", Color.GREEN, Color.WHITE);
         btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
         btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
         btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
-        buttons.add(btnSave);
-        buttons.add(btnEdit);
-        buttons.add(btnDelete);
-        buttons.add(btnCancel);
-        right.add(buttons, BorderLayout.SOUTH);
+        buttonsPanel.add(btnSave);
+        buttonsPanel.add(btnEdit);
+        buttonsPanel.add(btnDelete);
+        buttonsPanel.add(btnCancel);
+        right.add(buttonsPanel, BorderLayout.SOUTH);
 
-        tfInicio = new JTextField();
-        tfInicio.setPreferredSize(new Dimension(180, 25));
-        tfFim = new JTextField();
-        tfFim.setPreferredSize(new Dimension(180, 25));
+        tfInicio.setPreferredSize(new Dimension(260, 28));
+        tfFim.setPreferredSize(new Dimension(260, 28));
 
-        tfSalaFiltro = new JTextField();
-        tfSalaFiltro.setPreferredSize(new Dimension(180, 25));
-        tfUsuarioFiltro = new JTextField();
-        tfUsuarioFiltro.setPreferredSize(new Dimension(180, 25));
-
-        salaPickModel = new DefaultListModel<>();
-        usuarioPickModel = new DefaultListModel<>();
-        listSala = new JList<>(salaPickModel);
-        listUsuario = new JList<>(usuarioPickModel);
-        listSala.setVisibleRowCount(4);
-        listUsuario.setVisibleRowCount(4);
+        listSala.setVisibleRowCount(5);
+        listUsuario.setVisibleRowCount(5);
+        listSala.setPrototypeCellValue(new Sala() {{
+            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        }});
+        listUsuario.setPrototypeCellValue(new Usuario() {{
+            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            setEmail("xxxxxxxxxx@xxxxxxx.xx");
+        }});
 
         listSala.setCellRenderer((l, v, i, s, f) -> {
             JLabel lbl = new JLabel(v.getNome());
@@ -123,7 +110,6 @@ public class ReservasForm extends JPanel {
             lbl.setForeground(s ? l.getSelectionForeground() : l.getForeground());
             return lbl;
         });
-
         listUsuario.setCellRenderer((l, v, i, s, f) -> {
             JLabel lbl = new JLabel(v.getNome() + " (" + v.getEmail() + ")");
             lbl.setOpaque(true);
@@ -132,16 +118,15 @@ public class ReservasForm extends JPanel {
             return lbl;
         });
 
-        cbStatus = new JComboBox<>(ReservaStatus.values());
-        cbStatus.setRenderer((list, value, index, isSel, cellHasFocus) -> {
-            JLabel lbl = new JLabel(value.toString());
+        cbStatus.setRenderer((list, v, idx, sel, foc) -> {
+            JLabel lbl = new JLabel(v.toString());
             lbl.setOpaque(true);
-            lbl.setBackground(isSel ? list.getSelectionBackground() : list.getBackground());
-            lbl.setForeground(colorForStatus(value));
+            lbl.setForeground(colorForStatus(v));
+            lbl.setBackground(sel ? list.getSelectionBackground() : list.getBackground());
             return lbl;
         });
 
-        calendar.addPropertyChangeListener("date", e -> {
+        calendar.addPropertyChangeListener("selectedDate", e -> {
             selDate = calendar.getSelectedDate();
             reservasList.clearSelection();
             loadReservas();
@@ -164,22 +149,10 @@ public class ReservasForm extends JPanel {
         });
         btnEdit.addActionListener(e -> enableEdit());
 
-        tfSalaFiltro.getDocument().addDocumentListener(searchListener(this::applySalaFilter));
-        tfUsuarioFiltro.getDocument().addDocumentListener(searchListener(this::applyUsuarioFilter));
-
         if (calendar.getSelectedDate() == null) calendar.setSelectedDate(LocalDate.now());
         selDate = calendar.getSelectedDate();
         loadReservas();
         showCreate();
-        SwingUtilities.invokeLater(() -> split.setDividerLocation(0.4));
-    }
-
-    private DocumentListener searchListener(Runnable r) {
-        return new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { r.run(); }
-            public void removeUpdate(DocumentEvent e) { r.run(); }
-            public void changedUpdate(DocumentEvent e) { r.run(); }
-        };
     }
 
     private void loadReservas() {
@@ -189,37 +162,27 @@ public class ReservasForm extends JPanel {
         rCtrl.findByPeriodo(ini, fim).forEach(reservasModel::addElement);
     }
 
-    private void refreshSalaPick() {
+    private void refreshSalaPick(Sala keep) {
         salaPickModel.clear();
-        List<Sala> todas = sCtrl.findAll();
+        List<Sala> all = sCtrl.findAll();
         LocalDateTime ini = selDate.atStartOfDay();
         LocalDateTime fim = selDate.atTime(LocalTime.MAX);
-        todas.stream()
-                .filter(s -> rCtrl.isDisponivel(s.getId(), ini, fim))
+        all.stream()
+                .filter(s -> rCtrl.isDisponivel(s.getId(), ini, fim) || (keep != null && keep.equals(s)))
                 .forEach(salaPickModel::addElement);
     }
 
-    private void applySalaFilter() {
-        String q = tfSalaFiltro.getText().toLowerCase();
-        refreshSalaPick();
-        for (int i = salaPickModel.getSize() - 1; i >= 0; i--) {
-            if (!salaPickModel.getElementAt(i).getNome().toLowerCase().contains(q)) salaPickModel.remove(i);
-        }
-    }
-
-    private void applyUsuarioFilter() {
-        String q = tfUsuarioFiltro.getText().toLowerCase();
+    private void refreshUsuarioPick() {
         usuarioPickModel.clear();
-        uCtrl.findAll().forEach(u -> {
-            if ((u.getNome() + u.getEmail()).toLowerCase().contains(q)) usuarioPickModel.addElement(u);
-        });
+        uCtrl.findAll().forEach(usuarioPickModel::addElement);
     }
 
     private void showCreate() {
         current = null;
         details.removeAll();
-        details.add(new JLabel("Nova reserva " + selDate));
+        details.add(new JLabel("Nova reserva - " + selDate));
         form.removeAll();
+
         GridBagConstraints c = gc(0, 0);
         form.add(new JLabel("Início:"), c);
         c.gridx = 1;
@@ -234,30 +197,27 @@ public class ReservasForm extends JPanel {
         tfFim.setEditable(true);
         form.add(tfFim, c);
 
-        refreshSalaPick();
-        applyUsuarioFilter();
+        refreshSalaPick(null);
+        refreshUsuarioPick();
+
+        JScrollPane spSala = new JScrollPane(listSala);
+        spSala.setPreferredSize(new Dimension(260, 95));
+        JScrollPane spUsu = new JScrollPane(listUsuario);
+        spUsu.setPreferredSize(new Dimension(260, 95));
 
         c = gc(0, 2);
-        form.add(new JLabel("Filtro Sala:"), c);
-        c.gridx = 1;
-        form.add(tfSalaFiltro, c);
-        c = gc(0, 3);
-        form.add(new JLabel("Salas:"), c);
+        form.add(new JLabel("Sala:"), c);
         c.gridx = 1;
         listSala.setEnabled(true);
-        form.add(new JScrollPane(listSala), c);
+        form.add(spSala, c);
 
-        c = gc(0, 4);
-        form.add(new JLabel("Filtro Usuário:"), c);
-        c.gridx = 1;
-        form.add(tfUsuarioFiltro, c);
-        c = gc(0, 5);
-        form.add(new JLabel("Usuários:"), c);
+        c = gc(0, 3);
+        form.add(new JLabel("Usuário:"), c);
         c.gridx = 1;
         listUsuario.setEnabled(true);
-        form.add(new JScrollPane(listUsuario), c);
+        form.add(spUsu, c);
 
-        c = gc(0, 6);
+        c = gc(0, 4);
         form.add(new JLabel("Status:"), c);
         c.gridx = 1;
         cbStatus.setEnabled(true);
@@ -276,6 +236,7 @@ public class ReservasForm extends JPanel {
         details.removeAll();
         details.add(new JLabel("Detalhes da reserva"));
         form.removeAll();
+
         GridBagConstraints c = gc(0, 0);
         form.add(new JLabel("Início:"), c);
         c.gridx = 1;
@@ -290,22 +251,27 @@ public class ReservasForm extends JPanel {
         tfFim.setEditable(false);
         form.add(tfFim, c);
 
-        refreshSalaPick();
-        applyUsuarioFilter();
+        refreshSalaPick(current.getSala());
+        refreshUsuarioPick();
         listSala.setSelectedValue(current.getSala(), true);
         listSala.setEnabled(false);
         listUsuario.setSelectedValue(current.getUsuario(), true);
         listUsuario.setEnabled(false);
 
+        JScrollPane spSala = new JScrollPane(listSala);
+        spSala.setPreferredSize(new Dimension(260, 95));
+        JScrollPane spUsu = new JScrollPane(listUsuario);
+        spUsu.setPreferredSize(new Dimension(260, 95));
+
         c = gc(0, 2);
         form.add(new JLabel("Sala:"), c);
         c.gridx = 1;
-        form.add(new JScrollPane(listSala), c);
+        form.add(spSala, c);
 
         c = gc(0, 3);
         form.add(new JLabel("Usuário:"), c);
         c.gridx = 1;
-        form.add(new JScrollPane(listUsuario), c);
+        form.add(spUsu, c);
 
         c = gc(0, 4);
         form.add(new JLabel("Status:"), c);
@@ -372,6 +338,8 @@ public class ReservasForm extends JPanel {
         c.gridy = y;
         c.insets = new Insets(5, 5, 5, 5);
         c.anchor = x == 0 ? GridBagConstraints.EAST : GridBagConstraints.WEST;
+        c.fill = x == 1 ? GridBagConstraints.HORIZONTAL : GridBagConstraints.NONE;
+        c.weightx = x == 1 ? 1 : 0;
         return c;
     }
 
