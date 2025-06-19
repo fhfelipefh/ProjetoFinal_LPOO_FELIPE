@@ -8,7 +8,7 @@ docker compose up
 
 # Modelagem
 
-![img.png](img.png)
+![img.png](imgs/img.png)
 
 # Descrição
 
@@ -16,3 +16,14 @@ Vou desenvolver uma aplicação que permita reservar salas de reunião, laborat�
 A tela principal oferecerá menus para cadastros de salas, usuários e reservas, todos com operações de criar, listar, atualizar e excluir. As reservas nascem com status “Pendente” e podem ser aprovadas ou canceladas posteriormente.
 Também será possível filtrar as reservas por sala, por usuário ou por período.
 Entidades: Sala, Usuário e Reserva
+
+# Telas
+
+Reserva de salas
+![img_1.png](imgs/img_1.png)
+
+Cadastro de salas
+![img.png](imgs/img_2.png)
+
+Cadastro de usuários
+![img.png](imgs/img_3.png)
