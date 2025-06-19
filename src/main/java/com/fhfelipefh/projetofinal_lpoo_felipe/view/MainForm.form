@@ -51,7 +51,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <dividerLocation value="134"/>
+                      <dividerLocation value="434"/>
                       <dividerSize value="5"/>
                     </properties>
                     <border type="none"/>
@@ -61,13 +61,21 @@
                           <splitpane position="right"/>
                         </constraints>
                         <properties>
-                          <dividerLocation value="255"/>
+                          <dividerLocation value="310"/>
                           <dividerSize value="5"/>
                           <orientation value="0"/>
                         </properties>
                         <border type="none"/>
                         <children/>
                       </splitpane>
+                      <scrollpane id="25c3b" binding="reservasScrollPane">
+                        <constraints>
+                          <splitpane position="left"/>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children/>
+                      </scrollpane>
                     </children>
                   </splitpane>
                 </children>
