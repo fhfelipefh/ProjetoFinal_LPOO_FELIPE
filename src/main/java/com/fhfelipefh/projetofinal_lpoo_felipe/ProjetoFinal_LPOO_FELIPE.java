@@ -12,6 +12,6 @@ public class ProjetoFinal_LPOO_FELIPE {
 
     public static void main(String[] args) {
         System.out.println("Projeto Final LPOO - Felipe");
-        // inicia o main.form
+
     }
 }
