@@ -116,6 +116,22 @@ public class ReservasForm extends JPanel {
         listSala.setVisibleRowCount(4);
         listUsuario.setVisibleRowCount(4);
 
+        listSala.setCellRenderer((l, v, i, s, f) -> {
+            JLabel lbl = new JLabel(v.getNome());
+            lbl.setOpaque(true);
+            lbl.setBackground(s ? l.getSelectionBackground() : l.getBackground());
+            lbl.setForeground(s ? l.getSelectionForeground() : l.getForeground());
+            return lbl;
+        });
+
+        listUsuario.setCellRenderer((l, v, i, s, f) -> {
+            JLabel lbl = new JLabel(v.getNome() + " (" + v.getEmail() + ")");
+            lbl.setOpaque(true);
+            lbl.setBackground(s ? l.getSelectionBackground() : l.getBackground());
+            lbl.setForeground(s ? l.getSelectionForeground() : l.getForeground());
+            return lbl;
+        });
+
         cbStatus = new JComboBox<>(ReservaStatus.values());
         cbStatus.setRenderer((list, value, index, isSel, cellHasFocus) -> {
             JLabel lbl = new JLabel(value.toString());
@@ -160,17 +176,9 @@ public class ReservasForm extends JPanel {
 
     private DocumentListener searchListener(Runnable r) {
         return new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                r.run();
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                r.run();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                r.run();
-            }
+            public void insertUpdate(DocumentEvent e) { r.run(); }
+            public void removeUpdate(DocumentEvent e) { r.run(); }
+            public void changedUpdate(DocumentEvent e) { r.run(); }
         };
     }
 
