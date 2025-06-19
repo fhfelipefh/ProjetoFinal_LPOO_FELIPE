@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
 
@@ -33,6 +32,7 @@ public class ReservasForm extends JPanel {
     private final JList<Sala> listSala = new JList<>(salaPickModel);
     private final JList<Usuario> listUsuario = new JList<>(usuarioPickModel);
     private final JComboBox<ReservaStatus> cbStatus = new JComboBox<>(ReservaStatus.values());
+    private JLabel lblConflict;
     private JButton btnSave, btnEdit, btnDelete, btnCancel;
     private final ReservaController rCtrl = new ReservaController();
     private final SalaController sCtrl = new SalaController();
@@ -90,17 +90,18 @@ public class ReservasForm extends JPanel {
         buttonsPanel.add(btnCancel);
         right.add(buttonsPanel, BorderLayout.SOUTH);
 
-        tfInicio.setPreferredSize(new Dimension(260, 28));
-        tfFim.setPreferredSize(new Dimension(260, 28));
+        int fieldWidth = 520;
+        tfInicio.setPreferredSize(new Dimension(fieldWidth, 28));
+        tfFim.setPreferredSize(new Dimension(fieldWidth, 28));
 
-        listSala.setVisibleRowCount(5);
-        listUsuario.setVisibleRowCount(5);
+        listSala.setVisibleRowCount(6);
+        listUsuario.setVisibleRowCount(6);
         listSala.setPrototypeCellValue(new Sala() {{
-            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         }});
         listUsuario.setPrototypeCellValue(new Usuario() {{
-            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            setEmail("xxxxxxxxxx@xxxxxxx.xx");
+            setNome("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+            setEmail("xxxxxxxxxxxxxxxxxxxx@xxxxxxxxx.xx");
         }});
 
         listSala.setCellRenderer((l, v, i, s, f) -> {
@@ -162,14 +163,9 @@ public class ReservasForm extends JPanel {
         rCtrl.findByPeriodo(ini, fim).forEach(reservasModel::addElement);
     }
 
-    private void refreshSalaPick(Sala keep) {
+    private void refreshSalaPick() {
         salaPickModel.clear();
-        List<Sala> all = sCtrl.findAll();
-        LocalDateTime ini = selDate.atStartOfDay();
-        LocalDateTime fim = selDate.atTime(LocalTime.MAX);
-        all.stream()
-                .filter(s -> rCtrl.isDisponivel(s.getId(), ini, fim) || (keep != null && keep.equals(s)))
-                .forEach(salaPickModel::addElement);
+        sCtrl.findAll().forEach(salaPickModel::addElement);
     }
 
     private void refreshUsuarioPick() {
@@ -197,13 +193,13 @@ public class ReservasForm extends JPanel {
         tfFim.setEditable(true);
         form.add(tfFim, c);
 
-        refreshSalaPick(null);
+        refreshSalaPick();
         refreshUsuarioPick();
 
         JScrollPane spSala = new JScrollPane(listSala);
-        spSala.setPreferredSize(new Dimension(260, 95));
+        spSala.setPreferredSize(new Dimension(520, 120));
         JScrollPane spUsu = new JScrollPane(listUsuario);
-        spUsu.setPreferredSize(new Dimension(260, 95));
+        spUsu.setPreferredSize(new Dimension(520, 120));
 
         c = gc(0, 2);
         form.add(new JLabel("Sala:"), c);
@@ -223,6 +219,13 @@ public class ReservasForm extends JPanel {
         cbStatus.setEnabled(true);
         cbStatus.setSelectedItem(ReservaStatus.PENDENTE);
         form.add(cbStatus, c);
+
+        lblConflict = new JLabel(" ");
+        lblConflict.setForeground(Color.RED);
+        c = gc(0, 5);
+        c.gridwidth = 2;
+        c.anchor = GridBagConstraints.CENTER;
+        form.add(lblConflict, c);
 
         btnSave.setEnabled(true);
         btnEdit.setEnabled(false);
@@ -251,7 +254,7 @@ public class ReservasForm extends JPanel {
         tfFim.setEditable(false);
         form.add(tfFim, c);
 
-        refreshSalaPick(current.getSala());
+        refreshSalaPick();
         refreshUsuarioPick();
         listSala.setSelectedValue(current.getSala(), true);
         listSala.setEnabled(false);
@@ -259,9 +262,9 @@ public class ReservasForm extends JPanel {
         listUsuario.setEnabled(false);
 
         JScrollPane spSala = new JScrollPane(listSala);
-        spSala.setPreferredSize(new Dimension(260, 95));
+        spSala.setPreferredSize(new Dimension(520, 120));
         JScrollPane spUsu = new JScrollPane(listUsuario);
-        spUsu.setPreferredSize(new Dimension(260, 95));
+        spUsu.setPreferredSize(new Dimension(520, 120));
 
         c = gc(0, 2);
         form.add(new JLabel("Sala:"), c);
@@ -280,6 +283,13 @@ public class ReservasForm extends JPanel {
         cbStatus.setEnabled(false);
         form.add(cbStatus, c);
 
+        lblConflict = new JLabel(" ");
+        lblConflict.setForeground(Color.RED);
+        c = gc(0, 5);
+        c.gridwidth = 2;
+        c.anchor = GridBagConstraints.CENTER;
+        form.add(lblConflict, c);
+
         btnSave.setEnabled(false);
         btnEdit.setEnabled(true);
         btnDelete.setEnabled(true);
@@ -289,23 +299,32 @@ public class ReservasForm extends JPanel {
     }
 
     private void save() {
+        lblConflict.setText(" ");
         try {
             LocalDateTime ini = LocalDateTime.parse(tfInicio.getText(), fmt);
             LocalDateTime fim = LocalDateTime.parse(tfFim.getText(), fmt);
             Sala sala = listSala.getSelectedValue();
             Usuario usr = listUsuario.getSelectedValue();
             ReservaStatus st = (ReservaStatus) cbStatus.getSelectedItem();
+
+            if (sala == null && current != null) sala = current.getSala();
+            if (usr == null && current != null) usr = current.getUsuario();
+
             if (sala == null || usr == null) {
                 JOptionPane.showMessageDialog(this, "Selecione sala e usuário", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             if (current == null) {
                 rCtrl.create(ini, fim, sala, usr, st);
             } else {
                 rCtrl.update(current.getId(), ini, fim, sala, usr, st);
             }
+
             loadReservas();
             showCreate();
+        } catch (IllegalStateException ex) {
+            lblConflict.setText(ex.getMessage());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
