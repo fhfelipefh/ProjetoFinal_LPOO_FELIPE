@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
+import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createCurrencyField;
 
 public class SalasForm extends JPanel {
     private JSplitPane splitPanelVertical;
@@ -24,7 +25,7 @@ public class SalasForm extends JPanel {
     private JTextField tfNome;
     private JTextField tfCapacidade;
     private JTextField tfLocalizacao;
-    private JTextField tfPrecoHora;
+    private JFormattedTextField tfPrecoHora;
     private JButton btnSave;
     private JButton btnEdit;
     private JButton btnDelete;
@@ -73,7 +74,7 @@ public class SalasForm extends JPanel {
         tfNome = createTextField();
         tfCapacidade = createTextField();
         tfLocalizacao = createTextField();
-        tfPrecoHora = createTextField();
+        tfPrecoHora = createCurrencyField();
         placeField(formPanel, "Nome:", tfNome, 0);
         placeField(formPanel, "Capacidade:", tfCapacidade, 1);
         placeField(formPanel, "Localização:", tfLocalizacao, 2);
@@ -150,7 +151,7 @@ public class SalasForm extends JPanel {
             tfCapacidade.setEditable(false);
             tfLocalizacao.setText(sala.getLocalizacao());
             tfLocalizacao.setEditable(false);
-            tfPrecoHora.setText(sala.getPrecoHora().toString());
+            tfPrecoHora.setValue(sala.getPrecoHora());
             tfPrecoHora.setEditable(false);
             btnSave.setEnabled(false);
             btnEdit.setEnabled(true);
@@ -165,14 +166,13 @@ public class SalasForm extends JPanel {
         String nome = tfNome.getText().trim();
         String capStr = tfCapacidade.getText().trim();
         String loc = tfLocalizacao.getText().trim();
-        String preStr = tfPrecoHora.getText().trim();
-        if (nome.isEmpty() || capStr.isEmpty() || loc.isEmpty() || preStr.isEmpty()) {
+        BigDecimal preco = (BigDecimal) tfPrecoHora.getValue();
+        if (nome.isEmpty() || capStr.isEmpty() || loc.isEmpty() ||  preco == null) {
             JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
             Integer cap = Integer.valueOf(capStr);
-            BigDecimal preco = new BigDecimal(preStr);
             if (currentSala == null) controller.create(nome, cap, loc, preco);
             else {
                 currentSala.setNome(nome);
@@ -217,6 +217,6 @@ public class SalasForm extends JPanel {
         tfNome.setText("");
         tfCapacidade.setText("");
         tfLocalizacao.setText("");
-        tfPrecoHora.setText("");
+        tfPrecoHora.setValue(null);
     }
 }
