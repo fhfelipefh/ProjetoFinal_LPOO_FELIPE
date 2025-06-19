@@ -11,10 +11,10 @@ public class MainForm {
         ReservasForm reservasForm = new ReservasForm();
         tabbedPaneMain.addTab("Reservas", reservasForm);
 
-        JPanel salasPanel = new JPanel();
+        JPanel salasPanel = new SalasForm();
         tabbedPaneMain.addTab("Salas", salasPanel);
 
-        JPanel usuariosPanel = new JPanel();
+        JPanel usuariosPanel = new UsuariosForm();
         tabbedPaneMain.addTab("Usuários", usuariosPanel);
     }
 
