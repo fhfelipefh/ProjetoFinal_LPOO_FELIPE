@@ -10,6 +10,8 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
+
 public class SalasForm extends JPanel {
     private JSplitPane splitPanelVertical;
     private JScrollPane salasScrollPane;
@@ -76,26 +78,15 @@ public class SalasForm extends JPanel {
         placeField(formPanel, "Localização:", tfLocalizacao, 2);
         placeField(formPanel, "Preço Hora:", tfPrecoHora, 3);
 
-        btnSave = new JButton("Salvar");
-        btnSave.setBackground(Color.GREEN);
-        btnSave.setForeground(Color.WHITE);
+        btnSave = createColoredButton("Salvar", Color.GREEN, Color.WHITE);
+        btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
+        btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
+        btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
 
-        btnEdit = new JButton("Editar");
-        btnEdit.setBackground(Color.BLUE);
-        btnEdit.setForeground(Color.WHITE);
-
-        btnDelete = new JButton("Excluir");
-        btnDelete.setBackground(Color.RED);
-        btnDelete.setForeground(Color.WHITE);
-
-        btnCancel = new JButton("Cancelar");
-        btnCancel.setBackground(Color.LIGHT_GRAY);
-        btnCancel.setForeground(Color.BLACK);
-
-        buttonsPanel.add(btnCancel);
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
+        buttonsPanel.add(btnCancel);
 
         salasList.addListSelectionListener((ListSelectionListener) e -> {
             if (!e.getValueIsAdjusting()) showSala(salasList.getSelectedValue());

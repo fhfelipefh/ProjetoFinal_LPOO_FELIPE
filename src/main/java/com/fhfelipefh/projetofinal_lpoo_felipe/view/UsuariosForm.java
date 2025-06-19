@@ -8,6 +8,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.List;
 
+import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
+
 public class UsuariosForm extends JPanel {
     private JSplitPane splitPanelVertical;
     private JScrollPane usuariosScrollPane;
@@ -67,25 +69,15 @@ public class UsuariosForm extends JPanel {
         placeField(formPanel, "Nome:", tfNome, 0);
         placeField(formPanel, "Email:", tfEmail, 1);
 
-        btnSave = new JButton("Salvar");
-        btnSave.setBackground(Color.GREEN);
-        btnSave.setForeground(Color.WHITE);
-
-        btnEdit = new JButton("Editar");
-        btnEdit.setBackground(Color.BLUE);
-        btnEdit.setForeground(Color.WHITE);
-
-        btnDelete = new JButton("Excluir");
-        btnDelete.setBackground(Color.RED);
-        btnDelete.setForeground(Color.WHITE);
-
-        btnCancel = new JButton("Cancelar");
-        btnCancel.setBackground(Color.LIGHT_GRAY);
-        btnCancel.setForeground(Color.BLACK);
+        btnSave = createColoredButton("Salvar", Color.GREEN, Color.WHITE);
+        btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
+        btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
+        btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
 
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
+        buttonsPanel.add(btnCancel);
 
         usuariosList.addListSelectionListener((ListSelectionListener) e -> {
             if (!e.getValueIsAdjusting()) {
@@ -97,6 +89,10 @@ public class UsuariosForm extends JPanel {
         btnSave.addActionListener(e -> saveUser());
         btnEdit.addActionListener(e -> enableEditing());
         btnDelete.addActionListener(e -> deleteUser());
+        btnCancel.addActionListener(e -> {
+            usuariosList.clearSelection();
+            showUser(null);
+        });
 
         carregarUsuarios();
         showUser(null);
@@ -127,13 +123,8 @@ public class UsuariosForm extends JPanel {
         if (user == null) {
             detailsPanel.removeAll();
             detailsPanel.add(new JLabel("Novo Usuário"));
-            tfNome.setText("");
-            tfEmail.setText("");
-            tfNome.setEditable(true);
-            tfEmail.setEditable(true);
-            btnSave.setEnabled(true);
-            btnEdit.setEnabled(false);
-            btnDelete.setEnabled(false);
+            clearFields();
+            enableForm(true);
         } else {
             detailsPanel.removeAll();
             detailsPanel.add(new JLabel("Detalhes do Usuário"));
@@ -183,5 +174,25 @@ public class UsuariosForm extends JPanel {
                 showUser(null);
             }
         }
+    }
+
+    private void enableForm(boolean editable) {
+        tfNome.setEditable(editable);
+        tfEmail.setEditable(editable);
+        btnSave.setEnabled(editable);
+        btnEdit.setEnabled(!editable);
+        btnDelete.setEnabled(!editable);
+        btnCancel.setEnabled(editable);
+    }
+
+    private void clearFields() {
+        tfNome.setText("");
+        tfEmail.setText("");
+        tfNome.setEditable(true);
+        tfEmail.setEditable(true);
+        btnSave.setEnabled(true);
+        btnEdit.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnCancel.setEnabled(true);
     }
 }

@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
+
 public class ReservasForm extends JPanel {
     private JSplitPane splitPanelVertical;
     private DefaultListModel<Reserva> reservasModel;
@@ -133,13 +135,6 @@ public class ReservasForm extends JPanel {
         showCreateForm();
 
         SwingUtilities.invokeLater(() -> splitPanelVertical.setDividerLocation(0.4));
-    }
-
-    private JButton createColoredButton(String text, Color bg, Color fg) {
-        JButton b = new JButton(text);
-        b.setBackground(bg);
-        b.setForeground(fg);
-        return b;
     }
 
     private void loadReservations() {
