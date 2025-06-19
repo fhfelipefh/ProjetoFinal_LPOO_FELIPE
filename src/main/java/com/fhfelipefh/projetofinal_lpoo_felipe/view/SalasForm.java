@@ -34,7 +34,6 @@ public class SalasForm extends JPanel {
 
     public SalasForm() {
         super(new BorderLayout());
-
         splitPanelVertical = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPanelVertical.setResizeWeight(0.4);
         add(splitPanelVertical, BorderLayout.CENTER);
@@ -42,14 +41,16 @@ public class SalasForm extends JPanel {
         salasModel = new DefaultListModel<>();
         salasList = new JList<>(salasModel);
         salasList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         salasList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            String text = String.format("%s (Capacidade: %d)", value.getNome(), value.getCapacidade());
+            String text = String.format("%s | %s | (Capacidade: %d)", value.getNome(), value.getLocalizacao(), value.getCapacidade());
             JLabel lbl = new JLabel(text);
             lbl.setOpaque(true);
             lbl.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
             lbl.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
             return lbl;
         });
+
         salasScrollPane = new JScrollPane(salasList);
         splitPanelVertical.setLeftComponent(salasScrollPane);
 
