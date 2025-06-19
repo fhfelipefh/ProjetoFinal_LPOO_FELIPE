@@ -11,6 +11,7 @@ package com.fhfelipefh.projetofinal_lpoo_felipe;
 public class ProjetoFinal_LPOO_FELIPE {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        System.out.println("Projeto Final LPOO - Felipe");
+        // inicia o main.form
     }
 }
