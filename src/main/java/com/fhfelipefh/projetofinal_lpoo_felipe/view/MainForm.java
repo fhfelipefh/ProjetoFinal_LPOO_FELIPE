@@ -1,24 +1,21 @@
 package com.fhfelipefh.projetofinal_lpoo_felipe.view;
 
-import com.github.lgooddatepicker.components.CalendarPanel;
-
 import javax.swing.*;
 
 public class MainForm {
     private JTabbedPane tabbedPaneMain;
-    private JSplitPane splitPanelVertical;
-    private JSplitPane splitPaneRightVertical;
-    private JScrollPane reservasScrollPane;
 
     public MainForm() {
-        splitPanelVertical.setResizeWeight(0.5);
+        tabbedPaneMain = new JTabbedPane();
 
-        splitPaneRightVertical.setResizeWeight(0.5);
+        ReservasForm reservasForm = new ReservasForm();
+        tabbedPaneMain.addTab("Reservas", reservasForm);
 
-        SwingUtilities.invokeLater(() -> {
-            splitPanelVertical.setDividerLocation(0.5);
-            splitPaneRightVertical.setDividerLocation(0.5);
-        });
+        JPanel salasPanel = new JPanel();
+        tabbedPaneMain.addTab("Salas", salasPanel);
+
+        JPanel usuariosPanel = new JPanel();
+        tabbedPaneMain.addTab("Usuários", usuariosPanel);
     }
 
     public JComponent getRootComponent() {
