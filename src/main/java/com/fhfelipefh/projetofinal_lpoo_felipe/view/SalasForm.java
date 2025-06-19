@@ -87,16 +87,6 @@ public class SalasForm extends JPanel {
         filterPanel.add(spMaxCapacidade, fc);
         fc.gridx = 0;
         fc.gridy = 2;
-        filterPanel.add(new JLabel("Preço Mín.:"), fc);
-        fc.gridx = 1;
-        filterPanel.add(tfFilterPrecoMin, fc);
-        fc.gridx = 2;
-        filterPanel.add(new JLabel("Preço Máx.:"), fc);
-        fc.gridx = 3;
-        filterPanel.add(tfFilterPrecoMax, fc);
-        fc.gridx = 0;
-        fc.gridy = 3;
-        fc.gridwidth = 2;
         filterPanel.add(btnFiltrar, fc);
         fc.gridx = 2;
         fc.gridwidth = 2;
@@ -175,7 +165,7 @@ public class SalasForm extends JPanel {
             tfFilterNome.setText("");
             tfFilterLocalizacao.setText("");
             spMinCapacidade.setValue(0);
-            spMaxCapacidade.setValue(Integer.MAX_VALUE);
+            spMaxCapacidade.setValue(CAPACITY_MAX);
             tfFilterPrecoMin.setValue(null);
             tfFilterPrecoMax.setValue(null);
             carregarSalas();
