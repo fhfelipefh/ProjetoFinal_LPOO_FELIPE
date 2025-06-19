@@ -51,11 +51,24 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <dividerLocation value="435"/>
+                      <dividerLocation value="134"/>
                       <dividerSize value="5"/>
                     </properties>
                     <border type="none"/>
-                    <children/>
+                    <children>
+                      <splitpane id="cb32f" binding="splitPaneRightVertical">
+                        <constraints>
+                          <splitpane position="right"/>
+                        </constraints>
+                        <properties>
+                          <dividerLocation value="255"/>
+                          <dividerSize value="5"/>
+                          <orientation value="0"/>
+                        </properties>
+                        <border type="none"/>
+                        <children/>
+                      </splitpane>
+                    </children>
                   </splitpane>
                 </children>
               </grid>
