@@ -1,0 +1,209 @@
+package com.fhfelipefh.projetofinal_lpoo_felipe.view;
+
+import com.fhfelipefh.projetofinal_lpoo_felipe.control.SalaController;
+import com.fhfelipefh.projetofinal_lpoo_felipe.model.Sala;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.math.BigDecimal;
+import java.util.List;
+
+public class SalasForm extends JPanel {
+    private JSplitPane splitPanelVertical;
+    private JScrollPane salasScrollPane;
+    private DefaultListModel<Sala> salasModel;
+    private JList<Sala> salasList;
+    private JPanel rightPanel;
+    private JPanel detailsPanel;
+    private JPanel formPanel;
+    private JPanel buttonsPanel;
+    private JTextField tfNome;
+    private JTextField tfCapacidade;
+    private JTextField tfLocalizacao;
+    private JTextField tfPrecoHora;
+    private JButton btnSave;
+    private JButton btnEdit;
+    private JButton btnDelete;
+    private final SalaController controller = new SalaController();
+    private Sala currentSala;
+
+    public SalasForm() {
+        super(new BorderLayout());
+
+        splitPanelVertical = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPanelVertical.setResizeWeight(0.4);
+        add(splitPanelVertical, BorderLayout.CENTER);
+
+        salasModel = new DefaultListModel<>();
+        salasList = new JList<>(salasModel);
+        salasList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        salasList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            String text = String.format("%s (Capacidade: %d)",
+                    value.getNome(), value.getCapacidade());
+            JLabel lbl = new JLabel(text);
+            lbl.setOpaque(true);
+            lbl.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+            lbl.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+            return lbl;
+        });
+
+        salasScrollPane = new JScrollPane(salasList);
+        splitPanelVertical.setLeftComponent(salasScrollPane);
+
+        rightPanel = new JPanel(new BorderLayout(10, 10));
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        splitPanelVertical.setRightComponent(rightPanel);
+
+        detailsPanel = new JPanel();
+        detailsPanel.setBackground(Color.LIGHT_GRAY);
+        rightPanel.add(detailsPanel, BorderLayout.NORTH);
+
+        formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        rightPanel.add(formPanel, BorderLayout.CENTER);
+
+        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        tfNome = createTextField();
+        tfCapacidade = createTextField();
+        tfLocalizacao = createTextField();
+        tfPrecoHora = createTextField();
+        placeField(formPanel, "Nome:", tfNome, 0);
+        placeField(formPanel, "Capacidade:", tfCapacidade, 1);
+        placeField(formPanel, "Localização:", tfLocalizacao, 2);
+        placeField(formPanel, "Preço Hora:", tfPrecoHora, 3);
+
+        btnSave = new JButton("Salvar");
+        btnEdit = new JButton("Editar");
+        btnDelete = new JButton("Excluir");
+        buttonsPanel.add(btnSave);
+        buttonsPanel.add(btnEdit);
+        buttonsPanel.add(btnDelete);
+
+        salasList.addListSelectionListener((ListSelectionListener) e -> {
+            if (!e.getValueIsAdjusting()) showSala(salasList.getSelectedValue());
+        });
+
+        btnSave.addActionListener(e -> saveSala());
+        btnEdit.addActionListener(e -> enableEditing());
+        btnDelete.addActionListener(e -> deleteSala());
+
+        carregarSalas();
+        showSala(null);
+
+        SwingUtilities.invokeLater(() -> splitPanelVertical.setDividerLocation(0.4));
+    }
+
+    private JTextField createTextField() {
+        JTextField tf = new JTextField();
+        tf.setPreferredSize(new Dimension(200, 25));
+        return tf;
+    }
+
+    private void placeField(JPanel panel, String label, JTextField field, int row) {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = row;
+        c.anchor = GridBagConstraints.EAST;
+        c.insets = new Insets(5, 5, 5, 5);
+        panel.add(new JLabel(label), c);
+        c.gridx = 1;
+        c.anchor = GridBagConstraints.WEST;
+        panel.add(field, c);
+    }
+
+    private void carregarSalas() {
+        salasModel.clear();
+        List<Sala> list = controller.findAll();
+        list.forEach(salasModel::addElement);
+    }
+
+    private void showSala(Sala sala) {
+        currentSala = sala;
+        detailsPanel.removeAll();
+        if (sala == null) {
+            detailsPanel.add(new JLabel("Nova Sala"));
+            setFieldsEditable(true);
+            clearFields();
+            btnSave.setEnabled(true);
+            btnEdit.setEnabled(false);
+            btnDelete.setEnabled(false);
+        } else {
+            detailsPanel.add(new JLabel("Detalhes da Sala"));
+            tfNome.setText(sala.getNome());
+            tfNome.setEditable(false);
+            tfCapacidade.setText(sala.getCapacidade().toString());
+            tfCapacidade.setEditable(false);
+            tfLocalizacao.setText(sala.getLocalizacao());
+            tfLocalizacao.setEditable(false);
+            tfPrecoHora.setText(sala.getPrecoHora().toString());
+            tfPrecoHora.setEditable(false);
+            btnSave.setEnabled(false);
+            btnEdit.setEnabled(true);
+            btnDelete.setEnabled(true);
+        }
+        detailsPanel.revalidate();
+        detailsPanel.repaint();
+    }
+
+    private void saveSala() {
+        String nome = tfNome.getText().trim();
+        String capStr = tfCapacidade.getText().trim();
+        String loc = tfLocalizacao.getText().trim();
+        String preStr = tfPrecoHora.getText().trim();
+        if (nome.isEmpty() || capStr.isEmpty() || loc.isEmpty() || preStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            Integer cap = Integer.valueOf(capStr);
+            BigDecimal preco = new BigDecimal(preStr);
+            if (currentSala == null) {
+                controller.create(nome, cap, loc, preco);
+            } else {
+                currentSala.setNome(nome);
+                currentSala.setCapacidade(cap);
+                currentSala.setLocalizacao(loc);
+                currentSala.setPrecoHora(preco);
+                controller.update(currentSala);
+            }
+            carregarSalas();
+            showSala(null);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Capacidade e Preço devem ser numéricos.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void enableEditing() {
+        setFieldsEditable(true);
+        btnSave.setEnabled(true);
+        btnEdit.setEnabled(false);
+    }
+
+    private void deleteSala() {
+        if (currentSala != null) {
+            int ok = JOptionPane.showConfirmDialog(this, "Excluir sala?", "Confirmação", JOptionPane.YES_NO_OPTION);
+            if (ok == JOptionPane.YES_OPTION) {
+                controller.delete(currentSala.getId());
+                carregarSalas();
+                showSala(null);
+            }
+        }
+    }
+
+    private void setFieldsEditable(boolean editable) {
+        tfNome.setEditable(editable);
+        tfCapacidade.setEditable(editable);
+        tfLocalizacao.setEditable(editable);
+        tfPrecoHora.setEditable(editable);
+    }
+
+    private void clearFields() {
+        tfNome.setText("");
+        tfCapacidade.setText("");
+        tfLocalizacao.setText("");
+        tfPrecoHora.setText("");
+    }
+}
