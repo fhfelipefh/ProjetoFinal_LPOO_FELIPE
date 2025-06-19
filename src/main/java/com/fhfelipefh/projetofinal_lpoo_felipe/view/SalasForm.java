@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 
 import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createColoredButton;
@@ -14,6 +15,14 @@ import static com.fhfelipefh.projetofinal_lpoo_felipe.utils.Utils.createCurrency
 
 public class SalasForm extends JPanel {
     private JSplitPane splitPanelVertical;
+    private JTextField tfFilterNome;
+    private JTextField tfFilterLocalizacao;
+    private JSpinner spMinCapacidade;
+    private JSpinner spMaxCapacidade;
+    private JFormattedTextField tfFilterPrecoMin;
+    private JFormattedTextField tfFilterPrecoMax;
+    private JButton btnFiltrar;
+    private JButton btnLimparFiltros;
     private JScrollPane salasScrollPane;
     private DefaultListModel<Sala> salasModel;
     private JList<Sala> salasList;
@@ -38,12 +47,65 @@ public class SalasForm extends JPanel {
         splitPanelVertical.setResizeWeight(0.4);
         add(splitPanelVertical, BorderLayout.CENTER);
 
+        tfFilterNome = new JTextField();
+        tfFilterNome.setPreferredSize(new Dimension(100, 25));
+        tfFilterLocalizacao = new JTextField();
+        tfFilterLocalizacao.setPreferredSize(new Dimension(100, 25));
+        spMinCapacidade = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
+        spMaxCapacidade = new JSpinner(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+        tfFilterPrecoMin = createCurrencyField();
+        tfFilterPrecoMin.setValue(null);
+        tfFilterPrecoMax = createCurrencyField();
+        tfFilterPrecoMax.setValue(null);
+        btnFiltrar = new JButton("Filtrar");
+        btnLimparFiltros = new JButton("Limpar Filtros");
+
+        JPanel filterPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints fc = new GridBagConstraints();
+        fc.insets = new Insets(2, 2, 2, 2);
+        fc.anchor = GridBagConstraints.WEST;
+
+        fc.gridx = 0;
+        fc.gridy = 0;
+        filterPanel.add(new JLabel("Nome:"), fc);
+        fc.gridx = 1;
+        filterPanel.add(tfFilterNome, fc);
+        fc.gridx = 2;
+        filterPanel.add(new JLabel("Localização:"), fc);
+        fc.gridx = 3;
+        filterPanel.add(tfFilterLocalizacao, fc);
+        fc.gridx = 0;
+        fc.gridy = 1;
+        filterPanel.add(new JLabel("Capacidade Mín.:"), fc);
+        fc.gridx = 1;
+        filterPanel.add(spMinCapacidade, fc);
+        fc.gridx = 2;
+        filterPanel.add(new JLabel("Capacidade Máx.:"), fc);
+        fc.gridx = 3;
+        filterPanel.add(spMaxCapacidade, fc);
+        fc.gridx = 0;
+        fc.gridy = 2;
+        filterPanel.add(new JLabel("Preço Mín.:"), fc);
+        fc.gridx = 1;
+        filterPanel.add(tfFilterPrecoMin, fc);
+        fc.gridx = 2;
+        filterPanel.add(new JLabel("Preço Máx.:"), fc);
+        fc.gridx = 3;
+        filterPanel.add(tfFilterPrecoMax, fc);
+        fc.gridx = 0;
+        fc.gridy = 3;
+        fc.gridwidth = 2;
+        filterPanel.add(btnFiltrar, fc);
+        fc.gridx = 2;
+        fc.gridwidth = 2;
+        filterPanel.add(btnLimparFiltros, fc);
+
         salasModel = new DefaultListModel<>();
         salasList = new JList<>(salasModel);
         salasList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
         salasList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            String text = String.format("%s | %s | (Capacidade: %d)", value.getNome(), value.getLocalizacao(), value.getCapacidade());
+            String text = String.format("%s | %s | (Capacidade: %d)",
+                    value.getNome(), value.getLocalizacao(), value.getCapacidade());
             JLabel lbl = new JLabel(text);
             lbl.setOpaque(true);
             lbl.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
@@ -52,7 +114,10 @@ public class SalasForm extends JPanel {
         });
 
         salasScrollPane = new JScrollPane(salasList);
-        splitPanelVertical.setLeftComponent(salasScrollPane);
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(filterPanel, BorderLayout.NORTH);
+        leftPanel.add(salasScrollPane, BorderLayout.CENTER);
+        splitPanelVertical.setLeftComponent(leftPanel);
 
         rightPanel = new JPanel(new BorderLayout(10, 10));
         rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -70,9 +135,12 @@ public class SalasForm extends JPanel {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        tfNome = createTextField();
-        tfCapacidade = createTextField();
-        tfLocalizacao = createTextField();
+        tfNome = new JTextField();
+        tfNome.setPreferredSize(new Dimension(200, 25));
+        tfCapacidade = new JTextField();
+        tfCapacidade.setPreferredSize(new Dimension(200, 25));
+        tfLocalizacao = new JTextField();
+        tfLocalizacao.setPreferredSize(new Dimension(200, 25));
         tfPrecoHora = createCurrencyField();
         placeField(formPanel, "Nome:", tfNome, 0);
         placeField(formPanel, "Capacidade:", tfCapacidade, 1);
@@ -83,7 +151,6 @@ public class SalasForm extends JPanel {
         btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
         btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
         btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
-
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
@@ -101,15 +168,20 @@ public class SalasForm extends JPanel {
             showSala(null);
         });
 
+        btnFiltrar.addActionListener(e -> filterSalas());
+        btnLimparFiltros.addActionListener(e -> {
+            tfFilterNome.setText("");
+            tfFilterLocalizacao.setText("");
+            spMinCapacidade.setValue(0);
+            spMaxCapacidade.setValue(Integer.MAX_VALUE);
+            tfFilterPrecoMin.setValue(null);
+            tfFilterPrecoMax.setValue(null);
+            carregarSalas();
+        });
+
         carregarSalas();
         showSala(null);
         SwingUtilities.invokeLater(() -> splitPanelVertical.setDividerLocation(0.4));
-    }
-
-    private JTextField createTextField() {
-        JTextField tf = new JTextField();
-        tf.setPreferredSize(new Dimension(200, 25));
-        return tf;
     }
 
     private void placeField(JPanel panel, String label, JTextField field, int row) {
@@ -126,8 +198,7 @@ public class SalasForm extends JPanel {
 
     private void carregarSalas() {
         salasModel.clear();
-        List<Sala> list = controller.findAll();
-        list.forEach(salasModel::addElement);
+        controller.findAll().forEach(salasModel::addElement);
     }
 
     private void showSala(Sala sala) {
@@ -162,18 +233,47 @@ public class SalasForm extends JPanel {
     }
 
     private void saveSala() {
+        try {
+            tfPrecoHora.commitEdit();
+        } catch (ParseException ignored) {
+        }
+
         String nome = tfNome.getText().trim();
         String capStr = tfCapacidade.getText().trim();
         String loc = tfLocalizacao.getText().trim();
-        BigDecimal preco = (BigDecimal) tfPrecoHora.getValue();
-        if (nome.isEmpty() || capStr.isEmpty() || loc.isEmpty() ||  preco == null) {
+
+        BigDecimal preco = null;
+        Object rawVal = tfPrecoHora.getValue();
+
+        if (rawVal instanceof BigDecimal) {
+            preco = (BigDecimal) rawVal;
+        } else if (rawVal instanceof Number) {
+            preco = BigDecimal.valueOf(((Number) rawVal).doubleValue());
+        }
+
+        if (preco == null) {
+            String txt = tfPrecoHora.getText();
+            if (!txt.isBlank()) {
+                txt = txt.replaceAll("[^0-9,]", "").replace(",", ".");
+                if (!txt.isBlank()) {
+                    try {
+                        preco = new BigDecimal(txt);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+        }
+
+        if (nome.isEmpty() || capStr.isEmpty() || loc.isEmpty() || preco == null) {
             JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         try {
-            Integer cap = Integer.valueOf(capStr);
-            if (currentSala == null) controller.create(nome, cap, loc, preco);
-            else {
+            int cap = Integer.parseInt(capStr);
+            if (currentSala == null) {
+                controller.create(nome, cap, loc, preco);
+            } else {
                 currentSala.setNome(nome);
                 currentSala.setCapacidade(cap);
                 currentSala.setLocalizacao(loc);
@@ -183,7 +283,7 @@ public class SalasForm extends JPanel {
             carregarSalas();
             showSala(null);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Capacidade e Preço devem ser numéricos.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Capacidade deve ser numérica.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -217,5 +317,25 @@ public class SalasForm extends JPanel {
         tfCapacidade.setText("");
         tfLocalizacao.setText("");
         tfPrecoHora.setValue(null);
+    }
+
+    private void filterSalas() {
+        List<Sala> all = controller.findAll();
+        salasModel.clear();
+        String nomeQ = tfFilterNome.getText().trim().toLowerCase();
+        String locQ = tfFilterLocalizacao.getText().trim().toLowerCase();
+        int minCap = (Integer) spMinCapacidade.getValue();
+        int maxCap = (Integer) spMaxCapacidade.getValue();
+        BigDecimal preMin = (BigDecimal) tfFilterPrecoMin.getValue();
+        BigDecimal preMax = (BigDecimal) tfFilterPrecoMax.getValue();
+        for (Sala s : all) {
+            if (!s.getNome().toLowerCase().contains(nomeQ)) continue;
+            if (!s.getLocalizacao().toLowerCase().contains(locQ)) continue;
+            if (s.getCapacidade() < minCap || s.getCapacidade() > maxCap) continue;
+            if (preMin != null && s.getPrecoHora().compareTo(preMin) < 0) continue;
+            if (preMax != null && s.getPrecoHora().compareTo(preMax) > 0) continue;
+            salasModel.addElement(s);
+        }
+        salasList.clearSelection();
     }
 }
