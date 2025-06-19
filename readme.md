@@ -27,3 +27,9 @@ Cadastro de salas
 
 Cadastro de usuários
 ![img.png](imgs/img_3.png)
+
+# Gerar artefato
+
+```bash
+    mvn clean package
+```
