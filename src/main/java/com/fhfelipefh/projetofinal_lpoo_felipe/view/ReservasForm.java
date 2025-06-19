@@ -92,10 +92,11 @@ public class ReservasForm extends JPanel {
         btnEdit = createColoredButton("Editar", Color.BLUE, Color.WHITE);
         btnDelete = createColoredButton("Excluir", Color.RED, Color.WHITE);
         btnCancel = createColoredButton("Cancelar", Color.LIGHT_GRAY, Color.BLACK);
-        buttonsPanel.add(btnCancel);
+
         buttonsPanel.add(btnSave);
         buttonsPanel.add(btnEdit);
         buttonsPanel.add(btnDelete);
+        buttonsPanel.add(btnCancel);
         rightPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         tfInicio = new JTextField();
