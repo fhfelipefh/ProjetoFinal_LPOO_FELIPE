@@ -61,7 +61,7 @@
                           <splitpane position="right"/>
                         </constraints>
                         <properties>
-                          <dividerLocation value="310"/>
+                          <dividerLocation value="0"/>
                           <dividerSize value="5"/>
                           <orientation value="0"/>
                         </properties>

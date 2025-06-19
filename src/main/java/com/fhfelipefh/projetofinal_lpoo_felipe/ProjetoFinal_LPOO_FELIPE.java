@@ -19,6 +19,7 @@ public class ProjetoFinal_LPOO_FELIPE {
         SwingUtilities.invokeLater(() -> {
             MainForm form = new MainForm();
             JFrame frame = new JFrame("Reservas de Salas");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setContentPane(form.getRootComponent());
             frame.pack();
             frame.setSize(1024, 768);
