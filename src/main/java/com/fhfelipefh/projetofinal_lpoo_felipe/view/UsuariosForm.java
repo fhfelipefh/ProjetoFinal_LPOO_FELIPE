@@ -225,6 +225,10 @@ public class UsuariosForm extends JPanel {
                 controller.delete(currentUser.getId());
                 carregarUsuarios();
                 showUser(null);
+                ReservasForm reservasForm = (ReservasForm) SwingUtilities.getAncestorOfClass(ReservasForm.class, this);
+                if (reservasForm != null) {
+                    reservasForm.loadReservas();
+                }
             }
         }
     }

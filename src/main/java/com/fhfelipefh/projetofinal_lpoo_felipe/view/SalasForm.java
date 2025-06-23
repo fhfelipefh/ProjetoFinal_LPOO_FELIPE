@@ -298,6 +298,10 @@ public class SalasForm extends JPanel {
                 controller.delete(currentSala.getId());
                 carregarSalas();
                 showSala(null);
+                ReservasForm reservasForm = (ReservasForm) SwingUtilities.getAncestorOfClass(ReservasForm.class, this);
+                if (reservasForm != null) {
+                    reservasForm.loadReservas();
+                }
             }
         }
     }

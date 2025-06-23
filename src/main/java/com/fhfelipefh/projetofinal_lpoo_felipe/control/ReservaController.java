@@ -13,12 +13,6 @@ import java.util.List;
 public class ReservaController {
 
     public Reserva create(LocalDateTime inicio, LocalDateTime fim,
-                          Sala sala, Usuario usuario) {
-
-        return create(inicio, fim, sala, usuario, ReservaStatus.PENDENTE);
-    }
-
-    public Reserva create(LocalDateTime inicio, LocalDateTime fim,
                           Sala sala, Usuario usuario, ReservaStatus status) {
         EntityManager em = JpaUtil.getEntityManager();
         TypedQuery<Long> q = em.createQuery("""
@@ -47,16 +41,6 @@ public class ReservaController {
         return r;
     }
 
-    public Reserva updateStatus(Integer id, ReservaStatus status) {
-        EntityManager em = JpaUtil.getEntityManager();
-        em.getTransaction().begin();
-        Reserva r = em.find(Reserva.class, id);
-        if (r != null) r.setStatus(status);
-        em.getTransaction().commit();
-        em.close();
-        return r;
-    }
-
     public void delete(Integer id) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -64,33 +48,6 @@ public class ReservaController {
         if (r != null) em.remove(r);
         em.getTransaction().commit();
         em.close();
-    }
-
-    public List<Reserva> findAll() {
-        EntityManager em = JpaUtil.getEntityManager();
-        List<Reserva> list = em.createQuery("FROM Reserva", Reserva.class).getResultList();
-        em.close();
-        return list;
-    }
-
-    public List<Reserva> findBySala(Sala sala) {
-        EntityManager em = JpaUtil.getEntityManager();
-        List<Reserva> list = em.createQuery(
-                        "FROM Reserva r WHERE r.sala = :sala", Reserva.class)
-                .setParameter("sala", sala)
-                .getResultList();
-        em.close();
-        return list;
-    }
-
-    public List<Reserva> findByUsuario(Usuario usuario) {
-        EntityManager em = JpaUtil.getEntityManager();
-        List<Reserva> list = em.createQuery(
-                        "FROM Reserva r WHERE r.usuario = :u", Reserva.class)
-                .setParameter("u", usuario)
-                .getResultList();
-        em.close();
-        return list;
     }
 
     public List<Reserva> findByPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -105,14 +62,6 @@ public class ReservaController {
                 .getResultList();
         em.close();
         return list;
-    }
-
-    public Reserva update(Integer id,
-                          LocalDateTime inicio,
-                          LocalDateTime fim,
-                          Sala sala,
-                          Usuario usuario) {
-        return update(id, inicio, fim, sala, usuario, ReservaStatus.PENDENTE);
     }
 
     public Reserva update(Integer id,
@@ -153,22 +102,5 @@ public class ReservaController {
         em.getTransaction().commit();
         em.close();
         return r;
-    }
-
-    public boolean isDisponivel(Integer salaId, LocalDateTime inicio, LocalDateTime fim) {
-        EntityManager em = JpaUtil.getEntityManager();
-        Long qtd = em.createQuery("""
-                            SELECT COUNT(r)
-                              FROM Reserva r
-                             WHERE r.sala.id = :salaId
-                               AND r.dataHoraInicio < :fim
-                               AND r.dataHoraFim   > :inicio
-                        """, Long.class)
-                .setParameter("salaId", salaId)
-                .setParameter("fim", fim)
-                .setParameter("inicio", inicio)
-                .getSingleResult();
-        em.close();
-        return qtd == 0;
     }
 }

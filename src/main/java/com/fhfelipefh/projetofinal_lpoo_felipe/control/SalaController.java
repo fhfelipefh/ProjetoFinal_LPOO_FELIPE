@@ -43,13 +43,6 @@ public class SalaController {
         em.close();
     }
 
-    public Sala findById(Integer id) {
-        EntityManager em = JpaUtil.getEntityManager();
-        Sala sala = em.find(Sala.class, id);
-        em.close();
-        return sala;
-    }
-
     public List<Sala> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
         List<Sala> list = em.createQuery("FROM Sala", Sala.class).getResultList();

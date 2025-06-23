@@ -147,7 +147,9 @@ public class ReservasForm extends JPanel {
         btnCancel.addActionListener(e -> {
             reservasList.clearSelection();
             showCreate();
+            loadReservas();
         });
+
         btnEdit.addActionListener(e -> enableEdit());
 
         if (calendar.getSelectedDate() == null) calendar.setSelectedDate(LocalDate.now());
@@ -156,7 +158,7 @@ public class ReservasForm extends JPanel {
         showCreate();
     }
 
-    private void loadReservas() {
+    public void loadReservas() {
         reservasModel.clear();
         LocalDateTime ini = selDate.atStartOfDay();
         LocalDateTime fim = selDate.atTime(LocalTime.MAX);

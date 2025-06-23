@@ -38,13 +38,6 @@ public class UsuarioController {
         em.close();
     }
 
-    public Usuario findById(Integer id) {
-        EntityManager em = JpaUtil.getEntityManager();
-        Usuario u = em.find(Usuario.class, id);
-        em.close();
-        return u;
-    }
-
     public List<Usuario> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
         List<Usuario> list = em.createQuery("FROM Usuario", Usuario.class).getResultList();
